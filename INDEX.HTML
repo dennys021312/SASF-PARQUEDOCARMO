@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de Recepção SASF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Biblioteca html2canvas (Para gerar JPG) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-page: #fbf4ed;
+            --primary: #d47374;
+            --accent: #e98b52;
+            --text-main: #333;
+            --purple-title: #be6f9e;
+            --border-color: #ccc;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding: 15px;
+            margin: 0;
+            line-height: 1.3; 
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--primary);
+        }
+
+        /* --- HEADER --- */
+        header { 
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Estilo da Caixa do Logo - Agora com borda visível se estiver vazio */
+        .logo-box {
+            width: 90px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed #ccc; /* Borda para marcar o espaço */
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            overflow: hidden;
+            text-align: center;
+            padding: 2px;
+        }
+
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block; /* Garante que a imagem ocupe o espaço */
+        }
+
+        /* Texto que aparece se a imagem falhar */
+        .logo-alt-text {
+            font-size: 0.7rem;
+            color: #999;
+            font-weight: bold;
+            display: none; /* Escondido por padrão, aparece via JS se imagem falhar */
+        }
+
+        .header-text {
+            flex: 1;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        h1 { color: var(--primary); font-size: 1.4rem; font-weight: 700; margin: 0; line-height: 1.1; }
+        h2 { color: #555; font-size: 0.85rem; font-weight: 600; margin-top: 5px; text-transform: uppercase; }
+
+        /* Protocolo */
+        .protocolo-box {
+            background-color: #f8f9fa;
+            border: 1px dashed #ccc;
+            padding: 5px 10px;
+            text-align: center;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #555;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .protocolo-numero {
+            font-weight: 700;
+            color: var(--text-main);
+            font-family: monospace;
+            font-size: 1rem;
+        }
+
+        /* --- FORMULÁRIO --- */
+        .form-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 10px; }
+        .form-group { flex: 1; min-width: 140px; }
+        
+        label { display: block; font-weight: 600; font-size: 0.8rem; color: #444; margin-bottom: 3px; }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            background-color: #fafafa;
+        }
+
+        .section-title {
+            color: var(--purple-title);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #fce7f3;
+        }
+
+        .options-container { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .option-item {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 10px;
+            border: 1px solid #eee; border-radius: 4px;
+            cursor: pointer; font-size: 0.85rem; background: white;
+        }
+        input[type="checkbox"], input[type="radio"] { width: auto; margin: 0; accent-color: var(--accent); }
+
+        .actions { 
+            margin-top: 25px; 
+            display: flex; 
+            gap: 15px; 
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            flex: 1;
+        }
+        
+        .btn-print { background: #f3f4f6; color: #333; border: 1px solid #ddd; }
+        .btn-submit { background: var(--primary); color: white; flex: 2; }
+
+        #success-msg {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: #ecfdf5;
+            color: #065f46;
+            border-radius: 8px;
+            border: 1px solid #a7f3d0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="form-content">
+    <header>
+        <div class="header-top">
+            
+            <!-- LOGO 1: REDE COMUNITÁ (Esquerda) -->
+            <div class="logo-box" id="logo-rede-box">
+                <!-- Tenta carregar a imagem. Se falhar, mostra o texto. -->
+                <img src="LOGO.jpeg" 
+                     onerror="document.getElementById('alt-rede').style.display='block'; this.style.display='none';" 
+                     alt="Logo Rede Comunitá">
+                <div id="alt-rede" class="logo-alt-text" style="display:none;">LOGO<br>REDE COMUNITÁ</div>
+            </div>
+
+            <div class="header-text">
+                <h1>Ficha de Recepção</h1>
+                <h2>SASF - Rede Comunitá Jd. Nossa Senhora do Carmo</h2>
+            </div>
+
+            <!-- LOGO 2: PREFEITURA (Direita) -->
+            <div class="logo-box" id="logo-pref-box">
+                <!-- Coloque aqui o nome exato do arquivo da prefeitura (ex: logo_prefeitura.png) -->
+                <img src="LOGOTIPO_PREFEITURA_CENTRAL.png" 
+                     onerror="document.getElementById('alt-pref').style.display='block'; this.style.display='none';" 
+                     alt="Logo Prefeitura">
+                <div id="alt-pref" class="logo-alt-text" style="display:none;">LOGO<br>PREFEITURA</div>
+            </div>
+
+        </div>
+
+        <div class="protocolo-box">
+            <span>PROTOCOLO:</span>
+            <span class="protocolo-numero" id="protocolo_display">CARREGANDO...</span>
+        </div>
+    </header>
+
+    <form id="fichaForm">
+        <input type="hidden" name="protocolo" id="protocolo_input">
+        
+        <div class="form-row">
+            <div class="form-group" style="flex: 0 0 160px;">
+                <label>Data</label>
+                <input type="date" name="data_atendimento" id="data_hoje" required>
+            </div>
+            <div class="form-group">
+                <label>Atendente</label>
+                <input type="text" name="atendente" placeholder="Nome do profissional" required>
+            </div>
+        </div>
+
+        <div class="section-title">1. Identificação</div>
+        <div class="form-row">
+            <div class="form-group" style="flex: 3;">
+                <label>Nome Completo</label>
+                <input type="text" name="nome" id="nome_paciente" required>
+            </div>
+            <div class="form-group" style="flex: 0 0 100px;">
+                <label>Idade</label>
+                <input type="number" name="idade">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group" style="flex: 2;">
+                <label>Endereço</label>
+                <input type="text" name="endereco">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Telefone</label>
+                <input type="tel" name="telefone" id="telefone" placeholder="(11) 99999-9999">
+            </div>
+        </div>
+
+        <div class="section-title">2. Motivo da Procura</div>
+        <div class="options-container">
+            <label class="option-item"><input type="checkbox" name="motivo" value="Encaminhamento CRAS"> Encaminhamento CRAS</label>
+            <label class="option-item"><input type="checkbox" name="motivo" value="Espontanea"> Demanda Espontânea</label>
+            <label class="option-item"><input type="checkbox" name="motivo" value="Busca Ativa"> Busca Ativa</label>
+        </div>
+        <div class="form-group" style="margin-top: 15px;">
+            <label>Descrição / Observações</label>
+            <textarea name="descricao_demanda" rows="3" placeholder="Resumo breve..."></textarea>
+        </div>
+
+        <div class="section-title">3. Situação de Benefícios</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Bolsa Família?</label>
+                <div class="options-container">
+                    <label class="option-item"><input type="radio" name="bolsa" value="Sim"> Sim</label>
+                    <label class="option-item"><input type="radio" name="bolsa" value="Não"> Não</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>BPC (Benefício Prestação Continuada)?</label>
+                <div class="options-container">
+                    <label class="option-item"><input type="radio" name="bpc" value="Sim"> Sim</label>
+                    <label class="option-item"><input type="radio" name="bpc" value="Não"> Não</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">4. Encaminhamento</div>
+        <div class="options-container">
+            <label class="option-item"><input type="radio" name="encaminhamento" value="Visita Domiciliar"> Visita Domiciliar</label>
+            <label class="option-item"><input type="radio" name="encaminhamento" value="Orientado CRAS"> Orientado ao CRAS</label>
+            <label class="option-item"><input type="radio" name="encaminhamento" value="Atendimento Tecnico"> Atendimento Técnico</label>
+        </div>
+
+        <!-- Botões ignorados pelo gerador de imagem (data-html2canvas-ignore) -->
+        <div class="actions" data-html2canvas-ignore="true">
+            <button type="button" class="btn btn-print" onclick="gerarJPG()">📄 Baixar JPG (Imagem)</button>
+            <button type="submit" class="btn btn-submit">💾 Salvar Ficha</button>
+        </div>
+
+    </form>
+</div>
+
+<!-- Tela de Sucesso -->
+<div class="container" id="success-msg">
+    <h2 style="color: #065f46; margin-bottom: 10px;">✅ Sucesso!</h2>
+    <p>A ficha foi salva na planilha com segurança.</p>
+    <div style="margin: 20px 0; font-family: monospace; color: #555;">
+        Protocolo: <span id="success_protocolo" style="font-weight:bold;"></span>
+    </div>
+    <button class="btn btn-submit" style="margin-top: 20px; background: #059669;" onclick="location.reload()">Preencher Nova Ficha</button>
+</div>
+
+<script>
+    // --- LINK DO GOOGLE ---
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmQZx8isedtPEtX3zIAbRG1yqkP6IKyN_blqnzHhH2sqJGK3gINIqAOYk63G0pqMMy3Q/exec"; 
+
+    // --- GERADOR DE PROTOCOLO ---
+    function gerarProtocolo() {
+        const agora = new Date();
+        const ano = agora.getFullYear();
+        const mes = String(agora.getMonth() + 1).padStart(2, '0');
+        const dia = String(agora.getDate()).padStart(2, '0');
+        const hora = String(agora.getHours()).padStart(2, '0');
+        const min = String(agora.getMinutes()).padStart(2, '0');
+        const seg = String(agora.getSeconds()).padStart(2, '0');
+        return `${ano}${mes}${dia}-${hora}${min}${seg}`;
+    }
+
+    const protocoloAtual = gerarProtocolo();
+    document.getElementById('protocolo_display').innerText = protocoloAtual;
+    document.getElementById('protocolo_input').value = protocoloAtual;
+    document.getElementById('success_protocolo').innerText = protocoloAtual;
+
+    // --- GERADOR DE JPG ---
+    function gerarJPG() {
+        const element = document.getElementById('form-content');
+        
+        // Nome do arquivo
+        let nomePaciente = document.getElementById('nome_paciente').value;
+        if(!nomePaciente) nomePaciente = "Atendimento";
+        nomePaciente = nomePaciente.replace(/[^a-zA-Z0-9 ]/g, "");
+        const filename = 'Ficha_' + nomePaciente + '_' + protocoloAtual + '.jpg';
+
+        // Tira a "foto" da ficha
+        html2canvas(element, {
+            scale: 2, // Aumenta qualidade
+            useCORS: true, // Tenta carregar imagens externas se possível
+            backgroundColor: "#ffffff"
+        }).then(canvas => {
+            // Cria link falso para baixar
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL("image/jpeg", 0.9); // 0.9 é a qualidade (0 a 1)
+            link.click();
+        }).catch(err => {
+            console.error("Erro JPG:", err);
+            alert("Erro ao gerar imagem. Verifique se as imagens estão na mesma pasta.");
+        });
+    }
+
+    // --- LÓGICA DO SISTEMA ---
+    document.getElementById('data_hoje').valueAsDate = new Date();
+
+    document.getElementById('telefone').addEventListener('input', function (e) {
+        var x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+    });
+
+    const form = document.getElementById('fichaForm');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var btn = document.querySelector('.btn-submit');
+        var originalText = btn.innerText;
+        btn.innerText = "Enviando...";
+        btn.disabled = true;
+
+        const formData = new FormData(form);
+        const data = {};
+        for (const [key, value] of formData.entries()) {
+            if (data[key]) {
+                if (!Array.isArray(data[key])) { data[key] = [data[key]]; }
+                data[key].push(value);
+            } else { data[key] = value; }
+        }
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(data)
+        })
+        .then(() => {
+            document.getElementById('form-content').style.display = 'none';
+            document.getElementById('success-msg').style.display = 'block';
+            window.scrollTo(0,0);
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert("Erro na conexão.");
+            btn.innerText = originalText;
+            btn.disabled = false;
+        });
+    });
+</script>
+
+</body>
+</html>
