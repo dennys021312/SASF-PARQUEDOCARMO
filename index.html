@@ -3,6 +3,579 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de Recepção SASF - Protegido por LGPD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Biblioteca html2canvas (Para gerar JPG) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-page: #fbf4ed;
+            --primary: #d47374;
+            --accent: #e98b52;
+            --text-main: #333;
+            --purple-title: #be6f9e;
+            --border-color: #ccc;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            padding: 15px;
+            margin: 0;
+            line-height: 1.3; 
+            font-size: 13px;
+            padding-bottom: 60px; /* Espaço para o footer */
+        }
+
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--primary);
+        }
+
+        /* --- HEADER --- */
+        header { 
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-box {
+            width: 90px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            overflow: hidden;
+            text-align: center;
+            padding: 2px;
+        }
+
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .logo-alt-text {
+            font-size: 0.7rem;
+            color: #999;
+            font-weight: bold;
+            display: none;
+        }
+
+        .header-text {
+            flex: 1;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        h1 { color: var(--primary); font-size: 1.4rem; font-weight: 700; margin: 0; line-height: 1.1; }
+        h2 { color: #555; font-size: 0.85rem; font-weight: 600; margin-top: 5px; text-transform: uppercase; }
+
+        .protocolo-box {
+            background-color: #f8f9fa;
+            border: 1px dashed #ccc;
+            padding: 5px 10px;
+            text-align: center;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #555;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .protocolo-numero {
+            font-weight: 700;
+            color: var(--text-main);
+            font-family: monospace;
+            font-size: 1rem;
+        }
+
+        /* --- FORMULÁRIO --- */
+        .form-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 10px; }
+        .form-group { flex: 1; min-width: 140px; }
+        
+        label { display: block; font-weight: 600; font-size: 0.8rem; color: #444; margin-bottom: 3px; }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            background-color: #fafafa;
+        }
+
+        .section-title {
+            color: var(--purple-title);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #fce7f3;
+        }
+
+        .options-container { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .option-item {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 10px;
+            border: 1px solid #eee; border-radius: 4px;
+            cursor: pointer; font-size: 0.85rem; background: white;
+        }
+        input[type="checkbox"], input[type="radio"] { width: auto; margin: 0; accent-color: var(--accent); }
+
+        .actions { 
+            margin-top: 25px; 
+            display: flex; 
+            gap: 15px; 
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            flex: 1;
+        }
+        
+        .btn-print { background: #f3f4f6; color: #333; border: 1px solid #ddd; }
+        .btn-submit { background: var(--primary); color: white; flex: 2; }
+
+        #success-msg {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: #ecfdf5;
+            color: #065f46;
+            border-radius: 8px;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* --- LGPD / COOKIES / MODAL --- */
+        
+        /* Banner de Cookies */
+        #cookie-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.85rem;
+            z-index: 9999;
+            display: none; /* Controlado via JS */
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+        }
+        #cookie-banner button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Footer com Link de Privacidade */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.75rem;
+            color: #666;
+        }
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Modal de Privacidade */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 8px;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        .modal-body h3 { color: var(--primary); margin-top: 0; }
+        .modal-body h4 { font-size: 0.9rem; margin-bottom: 5px; color: #333; }
+        .modal-body p, .modal-body li { font-size: 0.85rem; color: #555; margin-bottom: 10px; }
+
+    </style>
+</head>
+<body>
+
+<!-- WIDGET VLIBRAS (ACESSIBILIDADE) - Ignorado no JPG -->
+<div data-html2canvas-ignore="true">
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+        new window.VLibras().init();
+    </script>
+</div>
+
+<div class="container" id="form-content">
+    <header>
+        <div class="header-top">
+            
+            <!-- LOGO 1: REDE COMUNITÁ -->
+            <div class="logo-box" id="logo-rede-box">
+                <img src="WhatsApp Image 2025-12-18 at 17.32.18.jpeg" 
+                     onerror="document.getElementById('alt-rede').style.display='block'; this.style.display='none';" 
+                     alt="Logo Rede Comunitá">
+                <div id="alt-rede" class="logo-alt-text" style="display:none;">LOGO<br>REDE COMUNITÁ</div>
+            </div>
+
+            <div class="header-text">
+                <h1>Ficha de Recepção</h1>
+                <h2>SASF - Rede Comunitá Jd. Nossa Senhora do Carmo</h2>
+            </div>
+
+            <!-- LOGO 2: PREFEITURA -->
+            <div class="logo-box" id="logo-pref-box">
+                <img src="image_2d3ee3.png" 
+                     onerror="document.getElementById('alt-pref').style.display='block'; this.style.display='none';" 
+                     alt="Logo Prefeitura">
+                <div id="alt-pref" class="logo-alt-text" style="display:none;">LOGO<br>PREFEITURA</div>
+            </div>
+
+        </div>
+
+        <div class="protocolo-box">
+            <span>PROTOCOLO:</span>
+            <span class="protocolo-numero" id="protocolo_display">CARREGANDO...</span>
+        </div>
+    </header>
+
+    <form id="fichaForm">
+        <input type="hidden" name="protocolo" id="protocolo_input">
+        
+        <div class="form-row">
+            <div class="form-group" style="flex: 0 0 160px;">
+                <label>Data</label>
+                <input type="date" name="data_atendimento" id="data_hoje" required>
+            </div>
+            <div class="form-group">
+                <label>Atendente</label>
+                <input type="text" name="atendente" placeholder="Nome do profissional" required>
+            </div>
+        </div>
+
+        <div class="section-title">1. Identificação</div>
+        <div class="form-row">
+            <div class="form-group" style="flex: 3;">
+                <label>Nome Completo</label>
+                <input type="text" name="nome" id="nome_paciente" required>
+            </div>
+            <div class="form-group" style="flex: 0 0 100px;">
+                <label>Idade</label>
+                <input type="number" name="idade">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group" style="flex: 2;">
+                <label>Endereço</label>
+                <input type="text" name="endereco">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Telefone</label>
+                <input type="tel" name="telefone" id="telefone" placeholder="(11) 99999-9999">
+            </div>
+        </div>
+
+        <div class="section-title">2. Motivo da Procura</div>
+        <div class="options-container">
+            <label class="option-item"><input type="checkbox" name="motivo" value="Encaminhamento CRAS"> Encaminhamento CRAS</label>
+            <label class="option-item"><input type="checkbox" name="motivo" value="Espontanea"> Demanda Espontânea</label>
+            <label class="option-item"><input type="checkbox" name="motivo" value="Busca Ativa"> Busca Ativa</label>
+        </div>
+        <div class="form-group" style="margin-top: 15px;">
+            <label>Descrição / Observações</label>
+            <textarea name="descricao_demanda" rows="3" placeholder="Resumo breve..."></textarea>
+        </div>
+
+        <div class="section-title">3. Situação de Benefícios</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Bolsa Família?</label>
+                <div class="options-container">
+                    <label class="option-item"><input type="radio" name="bolsa" value="Sim"> Sim</label>
+                    <label class="option-item"><input type="radio" name="bolsa" value="Não"> Não</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>BPC (Benefício Prestação Continuada)?</label>
+                <div class="options-container">
+                    <label class="option-item"><input type="radio" name="bpc" value="Sim"> Sim</label>
+                    <label class="option-item"><input type="radio" name="bpc" value="Não"> Não</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">4. Encaminhamento</div>
+        <div class="options-container">
+            <label class="option-item"><input type="radio" name="encaminhamento" value="Visita Domiciliar"> Visita Domiciliar</label>
+            <label class="option-item"><input type="radio" name="encaminhamento" value="Orientado CRAS"> Orientado ao CRAS</label>
+            <label class="option-item"><input type="radio" name="encaminhamento" value="Atendimento Tecnico"> Atendimento Técnico</label>
+        </div>
+
+        <!-- Botões ignorados pelo gerador de imagem -->
+        <div class="actions" data-html2canvas-ignore="true">
+            <button type="button" class="btn btn-print" onclick="gerarJPG()">📄 Baixar JPG (Imagem)</button>
+            <button type="submit" class="btn btn-submit">💾 Salvar Ficha</button>
+        </div>
+
+    </form>
+
+    <!-- FOOTER LGPD (Ignorado na impressão/JPG) -->
+    <footer data-html2canvas-ignore="true">
+        <p>SASF Rede Comunitá - Parceiro SMADS</p>
+        <p>Dados protegidos conforme a LGPD (Lei nº 13.709/2018). <a onclick="abrirModal()">Política de Privacidade</a></p>
+    </footer>
+
+</div>
+
+<!-- Tela de Sucesso -->
+<div class="container" id="success-msg">
+    <h2 style="color: #065f46; margin-bottom: 10px;">✅ Sucesso!</h2>
+    <p>A ficha foi salva na planilha com segurança.</p>
+    <div style="margin: 20px 0; font-family: monospace; color: #555;">
+        Protocolo: <span id="success_protocolo" style="font-weight:bold;"></span>
+    </div>
+    <button class="btn btn-submit" style="margin-top: 20px; background: #059669;" onclick="location.reload()">Preencher Nova Ficha</button>
+</div>
+
+<!-- BANNER DE COOKIES -->
+<div id="cookie-banner" data-html2canvas-ignore="true">
+    <p>Utilizamos cookies essenciais para o funcionamento do formulário e para garantir a segurança dos dados. Ao continuar, você concorda com nossa política.
+    <button onclick="aceitarCookies()">Aceitar e Continuar</button></p>
+</div>
+
+<!-- MODAL DE PRIVACIDADE -->
+<div class="modal-overlay" id="modalPrivacidade" data-html2canvas-ignore="true">
+    <div class="modal-content">
+        <span class="modal-close" onclick="fecharModal()">&times;</span>
+        <div class="modal-body">
+            <h3>Política de Privacidade e Proteção de Dados</h3>
+            <p><strong>Última atualização: Dezembro/2025</strong></p>
+            
+            <p>A <strong>Rede Comunitá</strong>, em parceria com a <strong>SMADS</strong> (Secretaria Municipal de Assistência e Desenvolvimento Social), preza pelo sigilo absoluto dos dados coletados.</p>
+
+            <h4>1. Coleta de Dados</h4>
+            <p>Coletamos apenas os dados necessários para a triagem socioassistencial (Nome, Idade, Endereço, Contato, Situação de Benefícios e Demanda Apresentada).</p>
+
+            <h4>2. Finalidade</h4>
+            <p>Os dados são utilizados exclusivamente para:</p>
+            <ul>
+                <li>Registro de atendimento e triagem;</li>
+                <li>Encaminhamento para serviços da rede (CRAS, CREAS, Saúde, Educação);</li>
+                <li>Prestação de contas conforme o Termo de Colaboração.</li>
+            </ul>
+
+            <h4>3. Compartilhamento</h4>
+            <p>Seus dados <strong>não são públicos</strong>. Eles podem ser compartilhados estritamente com:</p>
+            <ul>
+                <li>Órgãos da Prefeitura Municipal de São Paulo (SMADS);</li>
+                <li>Sistemas oficiais (SISA, SISRUA);</li>
+                <li>Órgãos de proteção e garantia de direitos, quando necessário.</li>
+            </ul>
+
+            <h4>4. Segurança</h4>
+            <p>Este formulário utiliza criptografia (HTTPS) para o envio de dados. As informações são armazenadas em ambiente seguro e restrito à equipe técnica autorizada.</p>
+
+            <h4>5. Encarregado de Dados (DPO)</h4>
+            <p>Para dúvidas sobre seus dados, correções ou solicitações de exclusão (conforme aplicável), entre em contato com nosso Encarregado de Proteção de Dados:</p>
+            <p style="background:#eee; padding:10px; border-radius:4px; text-align:center;">
+                <strong>E-mail:</strong> dpo@redecomunita.org.br<br>
+                (Substitua pelo e-mail real da instituição)
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- LINK DO GOOGLE ---
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmQZx8isedtPEtX3zIAbRG1yqkP6IKyN_blqnzHhH2sqJGK3gINIqAOYk63G0pqMMy3Q/exec"; 
+
+    // --- LÓGICA LGPD (COOKIES E MODAL) ---
+    
+    // Verifica se já aceitou cookies
+    if (!localStorage.getItem('cookiesAceitos')) {
+        document.getElementById('cookie-banner').style.display = 'block';
+    }
+
+    function aceitarCookies() {
+        localStorage.setItem('cookiesAceitos', 'true');
+        document.getElementById('cookie-banner').style.display = 'none';
+    }
+
+    function abrirModal() {
+        document.getElementById('modalPrivacidade').style.display = 'flex';
+    }
+
+    function fecharModal() {
+        document.getElementById('modalPrivacidade').style.display = 'none';
+    }
+
+    // Fecha modal se clicar fora
+    window.onclick = function(event) {
+        const modal = document.getElementById('modalPrivacidade');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // --- GERADOR DE PROTOCOLO ---
+    function gerarProtocolo() {
+        const agora = new Date();
+        const ano = agora.getFullYear();
+        const mes = String(agora.getMonth() + 1).padStart(2, '0');
+        const dia = String(agora.getDate()).padStart(2, '0');
+        const hora = String(agora.getHours()).padStart(2, '0');
+        const min = String(agora.getMinutes()).padStart(2, '0');
+        const seg = String(agora.getSeconds()).padStart(2, '0');
+        return `${ano}${mes}${dia}-${hora}${min}${seg}`;
+    }
+
+    const protocoloAtual = gerarProtocolo();
+    document.getElementById('protocolo_display').innerText = protocoloAtual;
+    document.getElementById('protocolo_input').value = protocoloAtual;
+    document.getElementById('success_protocolo').innerText = protocoloAtual;
+
+    // --- GERADOR DE JPG ---
+    function gerarJPG() {
+        const element = document.getElementById('form-content');
+        
+        let nomePaciente = document.getElementById('nome_paciente').value;
+        if(!nomePaciente) nomePaciente = "Atendimento";
+        nomePaciente = nomePaciente.replace(/[^a-zA-Z0-9 ]/g, "");
+        const filename = 'Ficha_' + nomePaciente + '_' + protocoloAtual + '.jpg';
+
+        html2canvas(element, {
+            scale: 2,
+            useCORS: true, 
+            backgroundColor: "#ffffff"
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL("image/jpeg", 0.9);
+            link.click();
+        }).catch(err => {
+            console.error("Erro JPG:", err);
+            alert("Erro ao gerar imagem.");
+        });
+    }
+
+    // --- LÓGICA DO SISTEMA ---
+    document.getElementById('data_hoje').valueAsDate = new Date();
+
+    document.getElementById('telefone').addEventListener('input', function (e) {
+        var x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+    });
+
+    const form = document.getElementById('fichaForm');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var btn = document.querySelector('.btn-submit');
+        var originalText = btn.innerText;
+        btn.innerText = "Enviando...";
+        btn.disabled = true;
+
+        const formData = new FormData(form);
+        const data = {};
+        for (const [key, value] of formData.entries()) {
+            if (data[key]) {
+                if (!Array.isArray(data[key])) { data[key] = [data[key]]; }
+                data[key].push(value);
+            } else { data[key] = value; }
+        }
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(data)
+        })
+        .then(() => {
+            document.getElementById('form-content').style.display = 'none';
+            document.getElementById('success-msg').style.display = 'block';
+            window.scrollTo(0,0);
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert("Erro na conexão.");
+            btn.innerText = originalText;
+            btn.disabled = false;
+        });
+    });
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ficha de Recepção SASF</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
@@ -408,3 +981,4 @@
 </body>
 
 </html>
+
